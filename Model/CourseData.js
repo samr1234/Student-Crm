@@ -10,26 +10,20 @@ const CourseDataSchema = new mongoose.Schema({
     },
     scores: {
         aptitude: [
-          { week: Number, score: Number },
+          { week: Number, score: Number , isPresent: Boolean},
         
         ],
         verbal: [
-          { week: Number, score: Number },
+          { week: Number, score: Number ,isPresent: Boolean},
     
         ],
         technical: [
-          { week: Number, score: Number },
+          { week: Number, score: Number ,isPresent: Boolean},
   
         ],
         
       },
-        totalScore:Number,
-        totalScorePercentage:Number,
-        totalScoreGrade:String,
-        totalScoreRank:Number,
-        attendance:Number,
-        attendancePercentage:Number,
-        result:String,
+       
 
 
 

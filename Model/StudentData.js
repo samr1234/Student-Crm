@@ -12,9 +12,15 @@ const StudentDataSchema =new mongoose.Schema({
     loi:String,
     batch:String,
     attendance:String,
+    totalScore:Number,
+    totalScorePercentage:Number,
+    totalScoreGrade:String,
+    totalScoreRank:Number,
+    attendance:Number,
+    attendancePercentage:Number,
     result:String,
     
-})
+}, { timestamps: true})
 
 const StudentData= mongoose.model('StudentData',StudentDataSchema);
 
