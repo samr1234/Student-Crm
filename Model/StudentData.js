@@ -12,12 +12,11 @@ const StudentDataSchema =new mongoose.Schema({
     loi:String,
     batch:String,
     attendance:String,
-    totalScore:Number,
-    totalScorePercentage:Number,
-    totalScoreGrade:String,
-    totalScoreRank:Number,
-    attendance:Number,
-    attendancePercentage:Number,
+    // totalScore:Number,
+    // totalScorePercentage:Number,
+    // totalScoreGrade:String,
+    // totalScoreRank:Number,
+    // attendancePercentage:Number,
     result:String,
     
 }, { timestamps: true})

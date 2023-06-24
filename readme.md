@@ -13,4 +13,4 @@ Run Appliaction
 -- npm start
 
 
-Application  run on -:- http://localhost:3000
+Application  run on -:- http://192.168.0.165:3000/data

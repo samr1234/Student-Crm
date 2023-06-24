@@ -3,7 +3,7 @@ var mongoose   = require('mongoose');
 var bodyParser = require('body-parser');
 var path       = require('path');
 var XLSX       = require('xlsx');
-
+const cors = require('cors');
 const dotenv  = require('dotenv');
 // model
 require('./Model/Connection.js')
@@ -35,29 +35,26 @@ const StudentDataRoute= require('./Routes/StudentData.js');
 app.use(express.static(path.resolve(__dirname,'public')));
 
 
-app.get('/',(req,res)=>{
-   StudentData.find((err,data)=>{
-       if(err){
-           console.log(err)
-       }else{
-           if(data!=''){
-               res.render('home',{result:data});
-           }else{
-               res.render('home',{result:{}});
-           }
-       }
-   });
-});
+// app.get('/',(req,res)=>{
+//    StudentData.find((err,data)=>{
+//        if(err){
+//            console.log(err)
+//        }else{
+//            if(data!=''){
+//                res.render('home',{result:data});
+//            }else{
+//                res.render('home',{result:{}});
+//            }
+//        }
+//    });
+// });
+
+app.use(cors({
+    credentials: true,
+    origin:'http://localhost:5173'
+}));
 
 
-
-
-// app.get('/data',(req,res)=>{
-    
-    
-
-
-// })
 
 app.use('',StudentDataRoute);
 //assign port

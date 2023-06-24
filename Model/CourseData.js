@@ -8,19 +8,27 @@ const CourseDataSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    date:{
+        type:Date,  
+        required:true
+    },
+    week:{
+        type:Number,
+    },
+    isPresent:Boolean,
     scores: {
-        aptitude: [
-          { week: Number, score: Number , isPresent: Boolean},
+        aptitude: 
+          { maxScore:Number, minScore:Number ,score: Number},
         
-        ],
-        verbal: [
-          { week: Number, score: Number ,isPresent: Boolean},
+        
+        verbal: 
+          { maxScore:Number, minScore:Number, score: Number},
     
-        ],
-        technical: [
-          { week: Number, score: Number ,isPresent: Boolean},
+        
+        technical:
+          { maxScore:Number, minScore:Number , score: Number },
   
-        ],
+        
         
       },
        
