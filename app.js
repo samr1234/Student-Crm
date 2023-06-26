@@ -49,10 +49,10 @@ app.use(express.static(path.resolve(__dirname,'public')));
 //    });
 // });
 
-app.use(cors({
-    credentials: true,
-    origin:'http://localhost:5173'
-}));
+// app.use(cors({
+//     credentials: true,
+//     origin:'http://localhost:5173'
+// }));
 
 
 
@@ -60,3 +60,4 @@ app.use('',StudentDataRoute);
 //assign port
 var port = process.env.PORT || 3000;
 app.listen(port,()=>console.log('server run at '+port));
+// '192.168.0.141'

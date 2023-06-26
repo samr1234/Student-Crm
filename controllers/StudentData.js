@@ -83,16 +83,16 @@ const getStudentData=((req,res)=>{
 
 const getCourseData = ((req,res,next)=>{
 
-    CourseData.find((err,data)=>{
-        if(err){
-            console.log(err)
-        }else{
-            if(data!=''){
-                res.send({data});
-            }else{
-                res.send({});
-            }
-        }
+    const studentId =  "6493f0b99234c77eeee3e320";
+    
+console.log(studentId)
+    CourseData.find({studentId:studentId}).then((data)=>{
+       if(data){
+            res.send({data})
+       }
+       
+    }).catch((err)=>{
+        console.log(err)
     });
 });
 
