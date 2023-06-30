@@ -27,16 +27,9 @@ const CourseDataSchema = new mongoose.Schema({
         
         technical:
           { maxScore:Number, minScore:Number , score: Number },
-  
-        
-        
+
+          
       },
-       
-
-
-
-
-
 });
 
 const CourseData = mongoose.model('CourseData',CourseDataSchema);

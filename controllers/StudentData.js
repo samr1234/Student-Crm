@@ -83,10 +83,10 @@ const getStudentData=((req,res)=>{
 
 const getCourseData = ((req,res,next)=>{
 
-    const studentId =  "6493f0b99234c77eeee3e320";
+    // const studentId =  "6493f0b99234c77eeee3e320";
     
-console.log(studentId)
-    CourseData.find({studentId:studentId}).then((data)=>{
+
+    CourseData.find({}).then((data)=>{
        if(data){
             res.send({data})
        }

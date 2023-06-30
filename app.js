@@ -4,7 +4,12 @@ var bodyParser = require('body-parser');
 var path       = require('path');
 var XLSX       = require('xlsx');
 const cors = require('cors');
+const http = require('http');
 const dotenv  = require('dotenv');
+
+const conn = require('./Model/Connection.js');
+
+conn();
 // model
 require('./Model/Connection.js')
 
@@ -13,7 +18,7 @@ require('./controllers/uploadDataPath.js');
 
 //multer
 
-const upload = require('./controllers/uploadDataPath.js');
+// const upload = require('./controllers/uploadDataPath.js');
 
 //connect to db
 const StudentData=require('./Model/StudentData.js');
@@ -35,29 +40,46 @@ const StudentDataRoute= require('./Routes/StudentData.js');
 app.use(express.static(path.resolve(__dirname,'public')));
 
 
-// app.get('/',(req,res)=>{
-//    StudentData.find((err,data)=>{
-//        if(err){
-//            console.log(err)
-//        }else{
-//            if(data!=''){
-//                res.render('home',{result:data});
-//            }else{
-//                res.render('home',{result:{}});
-//            }
-//        }
-//    });
+// const multer = require('multer');
+
+
+// const upload = multer({ dest: 'public' }); // Specify the destination directory for uploaded files
+
+// app.post('/upload', upload.single('pdfFile'), (req, res) => {
+//   if (!req.file) {
+//     res.status(400).send('No file uploaded.');
+//     return;
+//   }
+
+//   // Process the uploaded file here
+//   console.log('Uploaded file:', req.file);
+//   res.send('File uploaded successfully.');
 // });
 
-// app.use(cors({
-//     credentials: true,
-//     origin:'http://localhost:5173'
-// }));
+
+// const fileUrl = 'http://example.com/path/to/file.pdf'; // Replace with the actual file URL
+// const destinationPath = '/path/to/save/file.pdf'; // Replace with the desired destination path
+
+// const file = fs.createWriteStream(destinationPath);
+
+// http.get(fileUrl, response => {
+//   response.pipe(file);
+//   file.on('finish', () => {
+//     file.close(() => {
+//       console.log('File downloaded successfully.');
+//     });
+//   });
+// }).on('error', err => {
+//   fs.unlink(destinationPath, () => {
+//     console.error(`Error downloading file: ${err.message}`);
+//   });
+// });
+
+app.use(cors());
 
 
 
 app.use('',StudentDataRoute);
 //assign port
 var port = process.env.PORT || 3000;
-app.listen(port,()=>console.log('server run at '+port));
-// '192.168.0.141'
+app.listen(port,'192.168.0.110',()=>console.log('server run at '+port));
