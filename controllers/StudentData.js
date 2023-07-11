@@ -1,99 +1,45 @@
-const StudentData = require('../Model/StudentData');
-const CourseData = require('../Model/CourseData')
-var XLSX       = require('xlsx');
-const fs = require('fs')
+const express = require('express');
+const xlsx = require('xlsx');
+const JsonData = require('../Model/CourseData.js');
+const path = require('path');
+const multer = require('multer');
 
 
-const StudentDataPost =((req, res, next) => {
-  const filePath = './public/uploads/result.xlsx';
+const PostCourseData = (req,res)=>{
 
-const fileData = fs.readFileSync(filePath);
+  const file = req.file;
+  const workbook = xlsx.readFile(file.path);
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+  const jsonData = xlsx.utils.sheet_to_json(worksheet);
 
-const workbook = XLSX.read(fileData, { type: 'buffer' });
-const sheetNameList = workbook.SheetNames;
-
-sheetNameList.forEach((sheetName) => {
-  const xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-  StudentData.insertMany(xlData).then((err, data) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(data);
-    }
+  // Save JSON data to MongoDB
+  const data = new JsonData({
+    filename: file.originalname, 
+    jsonData: jsonData,
   });
-});
-
-  res.status(200).json({ message: 'File uploaded and processed successfully' });
-});
-
-
-
-
-const PostCourseData = ((req,res,next)=>{
-
-    
-        fs.readFile('data.json', 'utf8', (err, data) => {
-          if (err) {
-            console.error('Error reading JSON file:', err);
-            return res.status(500).send('Error reading JSON file');
-          }
-      
-          try {
-            const jsonData = JSON.parse(data);
-            const bulkOps = jsonData.map(doc => ({
-              insertOne: {
-                document: doc,
-             
-              }
-            }));
-      
-            CourseData.collection.bulkWrite(bulkOps, (error, result) => {
-              if (error) {
-                console.error('Error saving data to MongoDB:', error);
-                return res.status(500).send('Error saving data to MongoDB');
-              }
-              console.log('Data saved to MongoDB:', result);
-              res.status(200).send('Data saved to MongoDB');
-            });
-          } catch (error) {
-            console.error('Error parsing JSON:', error);
-            res.status(400).send('Error parsing JSON');
-          }
-        
-
+  data.save()
+    .then(savedData => {
+      res.json({ message: 'Conversion successful', jsonData: savedData });
     })
-});
-
-const getStudentData=((req,res)=>{
-
-    StudentData.find((err,data)=>{
-        if(err){
-            console.log(err)
-        }else{
-            if(data!=''){
-                res.send({data});
-            }else{
-                res.send({});
-            }
-        }
+    .catch(error => {
+      console.error(error);
+      res.status(500).json({ message: 'Error saving data' });
     });
+}
+
+const getCourseData = (req,res)=>{
+
+  JsonData.find().then(data => {
+    // console.log(data)
+    res.json(data.map(d => d.jsonData));
+  })
+  .catch(error => {
+    console.error(error);
+    res.status(500).json({ message: 'Error getting data' });
+  }
+  );
 
 
-});
+}
 
-const getCourseData = ((req,res,next)=>{
-
-    // const studentId =  "6493f0b99234c77eeee3e320";
-    
-
-    CourseData.find({}).then((data)=>{
-       if(data){
-            res.send({data})
-       }
-       
-    }).catch((err)=>{
-        console.log(err)
-    });
-});
-
-module.exports = {getCourseData,PostCourseData,StudentDataPost,getStudentData};
+module.exports = {PostCourseData,getCourseData};
