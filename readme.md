@@ -2,7 +2,7 @@ ExcelToDb
 
 This a small application in which we import excel sheet data to database
 
-Usage
+Usage 
 
 Install Packages
 
@@ -13,4 +13,6 @@ Run Appliaction
 -- npm start
 
 
-Application  run on -:- http://192.168.0.165:3000/data
+<!-- Application  run on -:- http://localhost:3000/ -->
+
+run with npm run dev command and change the server port according to need 

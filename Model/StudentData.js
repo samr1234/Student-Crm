@@ -1,23 +1,16 @@
 const mongoose = require('mongoose');
 
 const StudentDataSchema =new mongoose.Schema({
-    studentId:{
-        type:String,
-        // required:true,
-        // unique:true
-    },
+  
+    CRMID: String,
     name:String,
-    mobileNumber:String,
+    contact: Number,
     email:String,
-    loi:String,
     batch:String,
-    attendance:String,
-    // totalScore:Number,
-    // totalScorePercentage:Number,
-    // totalScoreGrade:String,
-    // totalScoreRank:Number,
-    // attendancePercentage:Number,
-    result:String,
+    course:String,
+    
+    
+    
     
 }, { timestamps: true})
 
