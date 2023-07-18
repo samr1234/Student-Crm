@@ -86,7 +86,7 @@ const PostCourseData = async (req, res) => {
     // Generate JSON file
     const jsonFilename = file.originalname.replace('.xlsx', '.json');
     const jsonFilePath = path.join(__dirname, 'uploads', jsonFilename);
-    fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
+    fs.writeFileSync(jsonFilePath,JSON.stringify(jsonData, null, 2));
 
     const courseDataPromises = [];
 
@@ -174,9 +174,9 @@ const getCourseData = (req,res)=>{
 
 const getSingleData = (req,res)=>{
 
-  const CRMID = 'HM2'
-  CourseData.find({CRMID:CRMID}).then(data => {
-    // console.log(data)
+  const email = 'maninderkaur06739@gmail.com'
+  CourseData.find({email:email}).then(data => {
+    console.log(data)
     
 
     res.send(data);
@@ -217,12 +217,28 @@ const postStudentData =(req,res)=>{
 
 const getStudentData = (req,res)=>{
   // let email ="prabhgold2000@gmail.com";
-  StudentData.find({email:email}).then(data => {
+  StudentData.find().then(data => {
     // console.log(data)
 
     res.send(data);
   })
 }
 
+const getDateData = async(req,res)=>{
 
-module.exports = {PostCourseData,getCourseData,getSingleData,postStudentData,getStudentData};
+  try {
+    const email = 'prabhgold2000@gmail.com'
+    const  date  = req.query.date; // Get the date from query parameters
+// console.log("date",date)
+    // Perform the query to filter data based on the date
+    const filteredData = await CourseData.find({ email:email,Date: date });
+
+    res.json(filteredData); // Send the filtered data as a JSON response
+  } catch (error) {
+    console.error('Error retrieving filtered data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+
+module.exports = {PostCourseData,getCourseData,getSingleData,postStudentData,getStudentData,getDateData};
