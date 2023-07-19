@@ -2,12 +2,17 @@ const mongoose = require('mongoose');
 
 const StudentDataSchema =new mongoose.Schema({
   
-    CRMID: String,
+    CRMID: {
+        type:String,
+        required: true,
+        unique: true
+    },
     name:String,
     contact: Number,
     email:String,
     batch:String,
     course:String,
+    startdate:String,
     
     
     
