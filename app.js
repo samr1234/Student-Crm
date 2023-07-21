@@ -43,4 +43,5 @@ app.use(cors());
 app.use('',StudentDataRoute);
 //assign port
 var port = process.env.PORT || 3001;
-app.listen(port,'192.168.1.27',()=>console.log('server run at '+port));
+app.listen(port,()=>console.log('server run at '+port));
+// '192.168.1.43',
