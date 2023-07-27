@@ -13,10 +13,7 @@ const StudentDataSchema =new mongoose.Schema({
     batch:String,
     course:String,
     startdate:String,
-    
-    
-    
-    
+
 }, { timestamps: true})
 
 const StudentData= mongoose.model('StudentData',StudentDataSchema);

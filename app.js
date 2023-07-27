@@ -2,7 +2,7 @@ var express    = require('express');
 
 var bodyParser = require('body-parser');
 var path       = require('path');
-
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 const dotenv  = require('dotenv');
@@ -24,13 +24,13 @@ require('./controllers/uploadDataPath.js');
 
 
 //init app
+
 var app = express();
-
-//set the template engine
-
+app.use(express.json());
+app.use(cookieParser());
 
 //fetch data from the request
-app.use(bodyParser.urlencoded({extended:false}));
+// app.use(express.urlencoded({ extended: true }));
 
 // Router
 
@@ -38,7 +38,11 @@ const StudentDataRoute= require('./Routes/StudentData.js');
 //static folder path
 app.use(express.static(path.resolve(__dirname,'public')));
 
-app.use(cors());
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:3000'
+}));
+// app.use(cors());
 
 app.use('',StudentDataRoute);
 //assign port
