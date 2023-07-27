@@ -292,6 +292,8 @@ const PostCourseData = async (req, res) => {
 
 
 const getCourseData = (req, res) => {
+
+  
   const limit = parseInt(req.query._limit);
   console.log(limit);
 
@@ -311,22 +313,32 @@ const getCourseData = (req, res) => {
 
 
 const getSingleData = (req,res)=>{
+  const {token}=req.cookies;
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized - Token not found' });
+  }
 
-  const email = 'prabhgold2000@gmail.com'
-  CourseData.find({email:email}).populate('studentId').then(data => {
-    console.log(data)
-    
+  // Verify the token
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Forbidden - Invalid token' });
+    }
 
-    res.send(data);
-    
- 
-  })
-  .catch(error => {
-    console.error(error);
-    res.status(500).json({ message: 'Error getting data' });
+    // Token is valid, extract email from decoded data
+    const email = decoded.email;
 
-}
-  );
+    // Use the email to find the corresponding data
+    CourseData.find({ email: email })
+      .populate('studentId')
+      .then((data) => {
+        console.log(data);
+        res.send(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ message: 'Error getting data' });
+      });
+  });
 }
 
 const postStudentData =(req,res)=>{
