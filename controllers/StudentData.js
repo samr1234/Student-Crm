@@ -256,7 +256,7 @@ const PostCourseData = async (req, res) => {
           AptiSkipped: jsonData[i].AptiSkipped,
           PDcorrect: jsonData[i].PDcorrect,
           PDincorrect: jsonData[i].PDincorrect,
-          PdSkipped: jsonData[i].pdSkipped,
+          PdSkipped: jsonData[i].PdSkipped,
           techcorrect: jsonData[i].techcorrect,
           techincorrect: jsonData[i].techincorrect,
           TechSkipped: jsonData[i].TechSkipped,
@@ -375,11 +375,22 @@ const getStudentData = (req,res)=>{
 }
 
 const getDateData = async(req,res)=>{
+  const {token}=req.cookies;
 
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized - Token not found' });
+  }
+
+  jwt.verify(token, secretKey, async(err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Forbidden - Invalid token' });
+    }
+
+
+  
   try {
-    const email = 'prabhgold2000@gmail.com'
-    const  date  = req.query.date; // Get the date from query parameters
-console.log("date",date)
+     const email = decoded.email;
+    const  date  = req.query.date;
     // Perform the query to filter data based on the date
     const filteredData = await CourseData.find({ email:email,Date: date });
     console.log(filteredData)
@@ -388,9 +399,14 @@ console.log("date",date)
     console.error('Error retrieving filtered data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+})
+}
+
+const Logout = (req,res,next)=>{
+  res.clearCookie('token').json(true)
 }
 
 
 
 
-module.exports = {PostCourseData,getCourseData,getSingleData,postStudentData,getStudentData,getDateData,Login,Profile};
+module.exports = {PostCourseData,getCourseData,getSingleData,postStudentData,getStudentData,getDateData,Login,Profile,Logout};
