@@ -41,7 +41,7 @@ app.use(express.static(path.resolve(__dirname,'public')));
 app.use(cors({
     credentials: true,
     // origin: 'http://localhost:3000'
-    origin: 'https://64ca2d0f11530b056acd07a1--celebrated-frangipane-6fc939.netlify.app'
+    origin: 'https://64ca336b0d9b01091e4f1a5f--celebrated-frangipane-6fc939.netlify.app/'
 }));
 // app.use(cors());
 
