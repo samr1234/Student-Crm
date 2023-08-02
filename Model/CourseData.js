@@ -47,6 +47,7 @@ const CourseDataSchema = new mongoose.Schema({
   Rank: Number,
   TestShare: String,
   loistudends: String,
+  Testattempted:Number
 
 
 });

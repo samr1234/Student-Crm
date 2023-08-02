@@ -272,9 +272,10 @@ const PostCourseData = async (req, res) => {
           TopStudent: jsonData[i].TopStudent,
           Rank: jsonData[i].Rank,
           TestShare: jsonData[i].TestShare,
-          loistudends: jsonData[i].loistudends
+          loistudends: jsonData[i].loistudends,
+          Testattempted:jsonData[i].Testattempted
           
-          // ... (rest of the fields)
+          
         });
 
         courseDataPromises.push(courseData);
