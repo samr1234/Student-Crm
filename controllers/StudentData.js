@@ -315,6 +315,7 @@ const getCourseData = (req, res) => {
 
 const getSingleData = (req,res)=>{
   const {token}=req.cookies;
+  console.log("token from single",token)
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized - Token not found' });
   }
