@@ -56,7 +56,7 @@ const Login =(req,res,next)=>{
               }
               console.log(userFound)
               console.log("token:::",token)
-               res.cookie("token",token).json(userFound)
+               res.cookie("token",token,{secure: true,}).json(userFound)
        
           })
           
