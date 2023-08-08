@@ -11,6 +11,7 @@ const moment = require('moment');
 const secretKey=process.env.SECRET_KEY;
 
 
+
 const Login =(req,res,next)=>{
 
 
@@ -316,9 +317,9 @@ const getCourseData = (req, res) => {
 const getSingleData = (req,res)=>{
   const {token}=req.cookies;
   console.log("token from single",token)
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized - Token not found' });
-  }
+  // if (!token) {
+  //   return res.status(401).json({ message: 'Unauthorized - Token not found' });
+  // }
 
   // Verify the token
   jwt.verify(token, secretKey, (err, decoded) => {
