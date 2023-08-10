@@ -9,6 +9,9 @@ const fs= require('fs');
 const { json } = require('body-parser');
 const moment = require('moment');
 const secretKey=process.env.SECRET_KEY;
+const AptiUser = require('../Model/AptiUser');
+const TechUser = require('../Model/TechUser');
+const PDUser = require('../Model/PDUser');
 
 
 
@@ -186,112 +189,168 @@ const Profile = (req,res,next)=>{
 
 
 
-const PostCourseData = async (req, res) => {
-  try {
-    const file = req.file;
-    const workbook = xlsx.readFile(file.path);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = xlsx.utils.sheet_to_json(worksheet);
+// const PostCourseData = async (req, res) => {
+//   try {
+//     const file = req.file;
+//     const workbook = xlsx.readFile(file.path);
+//     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+//     const jsonData = xlsx.utils.sheet_to_json(worksheet);
 
-    // Generate JSON file
-    const jsonFilename = file.originalname.replace('.xlsx', '.json');
-    const jsonFilePath = path.join(__dirname, 'uploads', jsonFilename);
-    fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
+//     // Generate JSON file
+//     const jsonFilename = file.originalname.replace('.xlsx', '.json');
+//     const jsonFilePath = path.join(__dirname, 'uploads', jsonFilename);
+//     fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
 
-    // Step 1: Get unique email addresses from jsonData
-    const uniqueEmails = [...new Set(jsonData.map(item => item.email))];
+//     // Step 1: Get unique email addresses from jsonData
+//     const uniqueEmails = [...new Set(jsonData.map(item => item.email))];
 
-    console.log("unique::",uniqueEmails)
-    // Step 2: Fetch studentId for unique emails in one query
-    const studentData = await StudentData.find({ email: { $in: uniqueEmails } }, '_id email');
+//     console.log("unique::",uniqueEmails)
+//     // Step 2: Fetch studentId for unique emails in one query
+//     const studentData = await StudentData.find({ email: { $in: uniqueEmails } }, '_id email');
 
-    // Step 3: Prepare a map of student email to studentId for easier lookup
-    const studentEmailToIdMap = new Map(studentData.map(student => [student.email, student._id]));
+//     // Step 3: Prepare a map of student email to studentId for easier lookup
+//     const studentEmailToIdMap = new Map(studentData.map(student => [student.email, student._id]));
 
-    const courseDataPromises = [];
+//     const courseDataPromises = [];
 
-    for (let i = 0; i < jsonData.length; i++) {
-      console.log("hello world")
-      const email = jsonData[i].email;
-      console.log(email)
-      const studentId = studentEmailToIdMap.get(email);
-      console.log(studentId)
-      if (!studentId) {
-        continue; // Skip if student data not found
-      }
+//     for (let i = 0; i < jsonData.length; i++) {
+//       console.log("hello world")
+//       const email = jsonData[i].email;
+//       console.log(email)
+//       const studentId = studentEmailToIdMap.get(email);
+//       console.log(studentId)
+//       if (!studentId) {
+//         continue; // Skip if student data not found
+//       }
 
-      const date = jsonData[i].Date;
-      const finalDate = new Date(date).toISOString();
-      console.log(date, finalDate)
-      // Step 4: Check if course data already exists for the student and date combination
-      const existingData = await CourseData.findOne({ studentId: studentId, Date: finalDate });
+//       const date = jsonData[i].Date;
+//       const finalDate = new Date(date).toISOString();
+//       console.log(date, finalDate)
+//       // Step 4: Check if course data already exists for the student and date combination
+//       const existingData = await CourseData.findOne({ studentId: studentId, Date: finalDate });
 
-      if (!existingData) {
-        // Create new course data if no existing data found
-        const courseData = CourseData.create({
-          studentId: studentId, // Corrected: Use studentId instead of studentData._id
+//       if (!existingData) {
+//         // Create new course data if no existing data found
+//         const courseData = CourseData.create({
+//           studentId: studentId, // Corrected: Use studentId instead of studentData._id
        
-          SrNo: jsonData[i].SrNo,
-          email: jsonData[i].email,
-          Apti: jsonData[i].Apti,
-          AptiMax: jsonData[i].AptiMax,
-          Apti_Prec: jsonData[i].Apti_Prec,
-          English: jsonData[i].English,
-          EnglishMax: jsonData[i].EnglishMax,
-          English_Prec: jsonData[i].English_Prec,
-          Tech: jsonData[i].Tech,
-          TechMax: jsonData[i].TechMax,
-          Tech_Prec: jsonData[i].Tech_Prec,
-          Total_Marks_obt: jsonData[i].Total_Marks_obt,
-          Total_Marks: jsonData[i].Total_Marks,
-          Overall_Prec: jsonData[i].Overall_Prec,
-          Average: jsonData[i].Average,
-          Date: jsonData[i].Date,
-          ClassesAttend: jsonData[i].ClassesAttend,
-          TotalAttend: jsonData[i].TotalAttend,
-          TotalCorrect: jsonData[i].TotalCorrect,
-          Totalincorrect: jsonData[i].Totalincorrect,
-          Totalskipped: jsonData[i].Totalskipped,
-          Apticorrect: jsonData[i].Apticorrect,
-          Aptiincorrect: jsonData[i].Aptiincorrect,
-          AptiSkipped: jsonData[i].AptiSkipped,
-          PDcorrect: jsonData[i].PDcorrect,
-          PDincorrect: jsonData[i].PDincorrect,
-          PdSkipped: jsonData[i].PdSkipped,
-          techcorrect: jsonData[i].techcorrect,
-          techincorrect: jsonData[i].techincorrect,
-          TechSkipped: jsonData[i].TechSkipped,
-          TotalTimeTaken: jsonData[i].TotalTimeTaken,
-          Aptitime: jsonData[i].Aptitime,
-          Pdtime: jsonData[i].Pdtime,
-          Techtime: jsonData[i].Techtime,
-          TimeDuration: jsonData[i].TimeDuration,
-          TotalQuestions: jsonData[i].TotalQuestions,
-          Totalaptiquestions: jsonData[i].Totalaptiquestions, // Assuming it should be the same as TotalQuestion
-          Totalpdquestions: jsonData[i].Totalpdquestions, // Assuming it should be the same as TotalQuestion
-          Totaltechquestions: jsonData[i].Totaltechquestions, // Assuming it should be the same as TotalQuestion
-          TopStudent: jsonData[i].TopStudent,
-          Rank: jsonData[i].Rank,
-          TestShare: jsonData[i].TestShare,
-          loistudends: jsonData[i].loistudends,
-          Testattempted:jsonData[i].Testattempted
+//           SrNo: jsonData[i].SrNo,
+//           email: jsonData[i].email,
+//           Apti: jsonData[i].Apti,
+//           AptiMax: jsonData[i].AptiMax,
+//           Apti_Prec: jsonData[i].Apti_Prec,
+//           English: jsonData[i].English,
+//           EnglishMax: jsonData[i].EnglishMax,
+//           English_Prec: jsonData[i].English_Prec,
+//           Tech: jsonData[i].Tech,
+//           TechMax: jsonData[i].TechMax,
+//           Tech_Prec: jsonData[i].Tech_Prec,
+//           Total_Marks_obt: jsonData[i].Total_Marks_obt,
+//           Total_Marks: jsonData[i].Total_Marks,
+//           Overall_Prec: jsonData[i].Overall_Prec,
+//           Average: jsonData[i].Average,
+//           Date: jsonData[i].Date,
+//           ClassesAttend: jsonData[i].ClassesAttend,
+//           TotalAttend: jsonData[i].TotalAttend,
+//           TotalCorrect: jsonData[i].TotalCorrect,
+//           Totalincorrect: jsonData[i].Totalincorrect,
+//           Totalskipped: jsonData[i].Totalskipped,
+//           Apticorrect: jsonData[i].Apticorrect,
+//           Aptiincorrect: jsonData[i].Aptiincorrect,
+//           AptiSkipped: jsonData[i].AptiSkipped,
+//           PDcorrect: jsonData[i].PDcorrect,
+//           PDincorrect: jsonData[i].PDincorrect,
+//           PdSkipped: jsonData[i].PdSkipped,
+//           techcorrect: jsonData[i].techcorrect,
+//           techincorrect: jsonData[i].techincorrect,
+//           TechSkipped: jsonData[i].TechSkipped,
+//           TotalTimeTaken: jsonData[i].TotalTimeTaken,
+//           Aptitime: jsonData[i].Aptitime,
+//           Pdtime: jsonData[i].Pdtime,
+//           Techtime: jsonData[i].Techtime,
+//           TimeDuration: jsonData[i].TimeDuration,
+//           TotalQuestions: jsonData[i].TotalQuestions,
+//           Totalaptiquestions: jsonData[i].Totalaptiquestions, // Assuming it should be the same as TotalQuestion
+//           Totalpdquestions: jsonData[i].Totalpdquestions, // Assuming it should be the same as TotalQuestion
+//           Totaltechquestions: jsonData[i].Totaltechquestions, // Assuming it should be the same as TotalQuestion
+//           TopStudent: jsonData[i].TopStudent,
+//           Rank: jsonData[i].Rank,
+//           TestShare: jsonData[i].TestShare,
+//           loistudends: jsonData[i].loistudends,
+//           Testattempted:jsonData[i].Testattempted
           
           
-        });
+//         });
 
-        courseDataPromises.push(courseData);
-      }
+//         courseDataPromises.push(courseData);
+//       }
+//     }
+
+//     const savedCourseData = await Promise.all(courseDataPromises);
+
+//     res.json({ message: 'Conversion successful', data: savedCourseData });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ message: 'An error occurred while processing the data' });
+//   }
+// };
+
+const importUser = async (req, res, category) => {
+  try {
+    const filePath = req.file.path;
+    const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const jsonData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    let User;
+
+    switch (category) {
+      case 'apti':
+        User = AptiUser;
+        break;
+      case 'tech':
+        User = TechUser;
+        break;
+      case 'pd':
+        User = PDUser;
+        break;
+      default:
+        throw new Error('Invalid category');
     }
 
-    const savedCourseData = await Promise.all(courseDataPromises);
-
-    res.json({ message: 'Conversion successful', data: savedCourseData });
+    await User.insertMany(jsonData);
+    res.send({ status: 200, success: true, msg: `${category.toUpperCase()} data imported` });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: 'An error occurred while processing the data' });
+    console.error(error);
+    res.status(400).send({ success: false, msg: error.message });
   }
 };
 
+const getUsers = async (req, res, category) => {
+  try {
+    let User;
+
+    switch (category) {
+      case 'apti':
+        User = AptiUser;
+        break;
+      case 'tech':
+        User = TechUser;
+        break;
+      case 'pd':
+        User = PDUser;
+        break;
+      default:
+        throw new Error('Invalid category');
+    }
+
+    const users = await User.find();
+    res.send(users);
+  } catch (error) {
+    console.error(error);
+    res.status(400).send({ success: false, msg: error.message });
+  }
+};
 
 const getCourseData = (req, res) => {
 
@@ -412,4 +471,5 @@ const Logout = (req,res,next)=>{
 
 
 
-module.exports = {PostCourseData,getCourseData,getSingleData,postStudentData,getStudentData,getDateData,Login,Profile,Logout};
+module.exports = {getCourseData,getSingleData,postStudentData,getStudentData,getDateData,Login,Profile,Logout,importUser,
+  getUsers,};

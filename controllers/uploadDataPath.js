@@ -12,4 +12,31 @@ var storage = multer.diskStorage({
   
 const upload = multer({ storage: storage });
 
-module.exports = upload;
+const storageApti = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, 'aptiNew');
+  },
+});
+
+const storageTech = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, 'NewTech');
+  },
+});
+
+const storagePD = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, 'pdpNEWdata');
+  },
+});
+
+module.exports = {storageApti,storageTech,storagePD,upload};
