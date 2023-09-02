@@ -296,34 +296,210 @@ const Profile = (req,res,next)=>{
 // };
 
 const importUser = async (req, res, category) => {
-  try {
-    const filePath = req.file.path;
-    const workbook = xlsx.readFile(filePath);
+
+    const file = req.file;
+    const workbook = xlsx.readFile(file.path);
     const sheetName = workbook.SheetNames[0];
     const jsonData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    const jsonFilename = file.originalname.replace('.xlsx', '.json');
+    const jsonFilePath = path.join(__dirname, 'uploads', jsonFilename);
+    fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
+     // Step 1: Get unique email addresses from jsonData
+    const uniqueEmails = [...new Set(jsonData.map(item => item.email))];
 
+//     console.log("unique::",uniqueEmails)
+    // Step 2: Fetch studentId for unique emails in one query
+    const studentData = await StudentData.find({ email: { $in: uniqueEmails } }, '_id email');
+
+//     // Step 3: Prepare a map of student email to studentId for easier lookup
+    const studentEmailToIdMap = new Map(studentData.map(student => [student.email, student._id]));
     let User;
 
     switch (category) {
       case 'apti':
         User = AptiUser;
+        try {
+          const courseDataPromises = [];
+          for (let i = 0; i < jsonData.length; i++) {
+                  console.log("hello world")
+                  const email = jsonData[i].email;
+                  console.log(email)
+                  const studentId = studentEmailToIdMap.get(email);
+                  console.log(studentId)
+                  if (!studentId) {
+                    continue; // Skip if student data not found
+                  }
+            
+                  const date = jsonData[i].Date;
+                  const finalDate = new Date(date).toISOString();
+                  console.log(date, finalDate)
+                  // Step 4: Check if course data already exists for the student and date combination
+                  const existingData = await User.findOne({ studentId: studentId, Date: finalDate });
+            
+                  if (!existingData) {
+                            // Create new course data if no existing data found
+                            const courseData = User.create({
+                              studentId: studentId, // Corrected: Use studentId instead of studentData._id
+                           
+                             
+                              email: jsonData[i].email,
+                              Apti: jsonData[i].Apti,
+                              AptiMax: jsonData[i].AptiMax,
+                              Apti_Prec: jsonData[i].Apti_Prec,
+                              Date: jsonData[i].Date,
+                              Apticorrect: jsonData[i].Apticorrect,
+                              Aptiincorrect: jsonData[i].Aptiincorrect,
+                              AptiSkipped: jsonData[i].Aptiskipped,
+                              AptiTimeTaken:jsonData[i].AptiTotalTimeTaken,
+                              Totalaptiquestions:jsonData[i].TotalAptiquestions,
+                              Totalapticlasses:jsonData[i].Totalapticlasses,
+                              Totalaptiattented:jsonData[i].AptiTotalAttend,
+                              Rank: jsonData[i].Rank,
+                              totaltestshared: jsonData[i].Testshared,
+                              totaltestattempted: jsonData[i].testattempted,
+                              AptiTimeDuration:jsonData[i].AptiTimeDuration
+                              
+                              
+                            });
+                    
+                            courseDataPromises.push(courseData);
+                          }
+                        }
+      
+      
+        
+      
+          const savedCourseData=await Promise.all(courseDataPromises);
+          res.json({ message: 'Conversion successful', data: savedCourseData });
+        } catch (error) {
+          console.error(error);
+          res.status(400).send({ success: false, msg: error.message });
+        }
         break;
       case 'tech':
         User = TechUser;
+        try {
+          const courseDataPromises = [];
+          for (let i = 0; i < jsonData.length; i++) {
+                  console.log("hello world")
+                  const email = jsonData[i].email;
+                  console.log(email)
+                  const studentId = studentEmailToIdMap.get(email);
+                  console.log(studentId)
+                  if (!studentId) {
+                    continue; // Skip if student data not found
+                  }
+            
+                  const date = jsonData[i].Date;
+                  const finalDate = new Date(date).toISOString();
+                  console.log(date, finalDate)
+                  // Step 4: Check if course data already exists for the student and date combination
+                  const existingData = await User.findOne({ studentId: studentId, Date: finalDate });
+            
+                  if (!existingData) {
+                            // Create new course data if no existing data found
+                            const courseData = User.create({
+                              studentId: studentId, // Corrected: Use studentId instead of studentData._id
+                           
+                             
+                              email: jsonData[i].email,
+                              Tech: jsonData[i].TECH,
+                              TECHMax: jsonData[i].TECHMax,
+                              TECH_Prec: jsonData[i].TECH_Prec,
+                              Date: jsonData[i].Date,
+                              TECHcorrect: jsonData[i].TECHcorrect,
+                              TECHincorrect: jsonData[i].TECHincorrect,
+                              TECHSkipped: jsonData[i].TECHskipped,
+                              TECHTotalTimeTaken:jsonData[i].TECHTotalTimeTaken,
+                              TotalTECHquestions:jsonData[i].TotalTECHquestions,
+                              TechClassesAttend:jsonData[i].TechClassesAttend,
+                              TECHTotalAttend:jsonData[i].TECHTotalAttend,
+                              Rank: jsonData[i].Rank,
+                              Testshared: jsonData[i].Testshared,
+                              testattempted: jsonData[i].testattempted,
+                              TECHTimeDuration:jsonData[i].TECHTimeDuration
+                              
+                              
+                            });
+                    
+                            courseDataPromises.push(courseData);
+                          }
+                        }
+      
+      
+        
+      
+          const savedCourseData=await Promise.all(courseDataPromises);
+          res.json({ message: 'Conversion successful', data: savedCourseData });
+        } catch (error) {
+          console.error(error);
+          res.status(400).send({ success: false, msg: error.message });
+        }
         break;
       case 'pd':
         User = PDUser;
+        try {
+          const courseDataPromises = [];
+          for (let i = 0; i < jsonData.length; i++) {
+                  console.log("hello world")
+                  const email = jsonData[i].email;
+                  console.log(email)
+                  const studentId = studentEmailToIdMap.get(email);
+                  console.log(studentId)
+                  if (!studentId) {
+                    continue; // Skip if student data not found
+                  }
+            
+                  const date = jsonData[i].Date;
+                  const finalDate = new Date(date).toISOString();
+                  console.log(date, finalDate)
+                  // Step 4: Check if course data already exists for the student and date combination
+                  const existingData = await User.findOne({ studentId: studentId, Date: finalDate });
+            
+                  if (!existingData) {
+                            // Create new course data if no existing data found
+                            const courseData = User.create({
+                              studentId: studentId, // Corrected: Use studentId instead of studentData._id
+                           
+                             
+                              email: jsonData[i].email,
+                              PD: jsonData[i].PD,
+                              PDMax: jsonData[i].PDMax,
+                              PD_Prec: jsonData[i].PD_Prec,
+                              Date: jsonData[i].Date,
+                              PDcorrect: jsonData[i].PDcorrect,
+                              PDincorrect: jsonData[i].PDincorrect,
+                              PdSkipped: jsonData[i].PdSkipped,
+                              PDTotalTimeTaken:jsonData[i].PDTotalTimeTaken,
+                              Totalpdquestions:jsonData[i].Totalpdquestions,
+                              PDClassesAttend:jsonData[i].PDClassesAttend,
+                              PDTotalAttend:jsonData[i].PDTotalAttend,
+                              Rank: jsonData[i].Rank,
+                              Testshared: jsonData[i].Testshared,
+                              testattempted: jsonData[i].testattempted,
+                              PDTimeDuration:jsonData[i].PDTimeDuration
+                              
+                              
+                            });
+                    
+                            courseDataPromises.push(courseData);
+                          }
+                        }
+      
+      
+        
+      
+          const savedCourseData=await Promise.all(courseDataPromises);
+          res.json({ message: 'Conversion successful', data: savedCourseData });
+        } catch (error) {
+          console.error(error);
+          res.status(400).send({ success: false, msg: error.message });
+        }
         break;
       default:
         throw new Error('Invalid category');
     }
-
-    await User.insertMany(jsonData);
-    res.send({ status: 200, success: true, msg: `${category.toUpperCase()} data imported` });
-  } catch (error) {
-    console.error(error);
-    res.status(400).send({ success: false, msg: error.message });
-  }
+  
 };
 
 const getUsers = async (req, res, category) => {
@@ -376,9 +552,9 @@ const getCourseData = (req, res) => {
 const getSingleData = (req,res)=>{
   const {token}=req.cookies;
   console.log("token from single",token)
-  // if (!token) {
-  //   return res.status(401).json({ message: 'Unauthorized - Token not found' });
-  // }
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized - Token not found' });
+  }
 
   // Verify the token
   jwt.verify(token, secretKey, (err, decoded) => {
@@ -451,7 +627,7 @@ const getDateData = async(req,res)=>{
 
   
   try {
-     const email = decoded.email;
+    const email = decoded.email;
     const  date  = req.query.date;
     // Perform the query to filter data based on the date
     const filteredData = await CourseData.find({ email:email,Date: date });
@@ -470,6 +646,5 @@ const Logout = (req,res,next)=>{
 
 
 
-
 module.exports = {getCourseData,getSingleData,postStudentData,getStudentData,getDateData,Login,Profile,Logout,importUser,
-  getUsers,};
+  getUsers};

@@ -17,7 +17,7 @@ const techUserSchema = new mongoose.Schema({
   Testshared: Number,
   Testattempted: Number,
   TECH_Prec: Number,
-  date:Date
+  Date:Date
 });
 
 module.exports = mongoose.model('TechUser', techUserSchema);

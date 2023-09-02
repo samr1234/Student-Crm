@@ -17,7 +17,7 @@ const aptiUserSchema = new mongoose.Schema({
   totaltestattempted: Number,
   Apti_Prec: Number,
   AptiTimeDuration: String,
-  date:Date
+  Date:Date
 });
 
 module.exports = mongoose.model('AptiUser', aptiUserSchema);
