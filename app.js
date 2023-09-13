@@ -16,11 +16,16 @@ app.use(cookieParser());
 
 const StudentDataRoute= require('./Routes/StudentData.js');
 //static folder path
+// app.use(cors({
+//     credentials: true,
+//     origin: 'http://www.studentpanel.hopingminds.tech/'
+    
+// }));
+
 app.use(cors({
     credentials: true,
-    origin: 'http://www.studentpanel.hopingminds.tech/'
-    
-}));
+    origin: 'http://localhost:3000'
+}))
 // app.use(cors());
 app.use(express.static(path.resolve(__dirname, 'public')));
 app.use('',StudentDataRoute);
